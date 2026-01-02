@@ -1,4 +1,22 @@
-## 📌 Aclaración
-Este repositorio es un fork del proyecto original.
-Este repositorio contiene exclusivamente la capa frontend.
-Mi participación se centró en el desarrollo de la interfaz y experiencia de usuario.
+# Proyecto IoT – Frontend
+
+Interfaz frontend del proyecto IoT, desarrollada con enfoque en experiencia de usuario,
+componentes reutilizables y diseño responsive.
+
+## 🎯 Mi rol
+- Desarrollo del frontend
+- Arquitectura de componentes
+- Diseño UI y UX
+- Integración con servicios backend
+
+## 🛠️ Tecnologías
+- React / Vite
+- TypeScript
+- Tailwind CSS
+- Git & GitHub
+
+## 🚀 Despliegue
+🔗 
+
+## 📌 Notas
+Este repositorio corresponde únicamente a la capa frontend del proyecto.
