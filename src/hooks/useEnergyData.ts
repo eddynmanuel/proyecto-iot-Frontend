@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "./useAuth";
-import { axiosInstance } from "../services/authService";
 
 export const useEnergyData = () => {
   const { accessToken } = useAuth();
@@ -11,15 +10,11 @@ export const useEnergyData = () => {
     const fetchEnergyData = async () => {
       setLoading(true);
       try {
-        const baseUrl =
-          import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
-        const response = await axiosInstance.get(`${baseUrl}/iot/energy`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        const data: number[] = response.data;
-        setEnergyHistory(data);
+        // Mock energy data
+        const mockData = Array.from({ length: 24 }, (_, i) =>
+          Math.floor(Math.random() * 500) + 200
+        );
+        setEnergyHistory(mockData);
       } catch (error) {
         setEnergyHistory([]);
       } finally {

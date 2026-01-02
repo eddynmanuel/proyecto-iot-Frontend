@@ -52,7 +52,7 @@ export default function Modal({
           {/* Panel */}
           <motion.div
             key="modal-panel"
-            className={`relative w-[94%] ${panelClassName} rounded-2xl p-6 bg-slate-900 shadow-lg ${colors.text} ${className}`}
+            className={`relative w-[94%] ${panelClassName} max-h-[85vh] flex flex-col rounded-2xl bg-slate-900 shadow-2xl ${colors.text} ${className}`}
             initial={{ y: 20, scale: 0.98, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 12, scale: 0.98, opacity: 0 }}
@@ -61,20 +61,25 @@ export default function Modal({
             aria-modal="true"
             onKeyDown={(e) => e.stopPropagation()}
           >
-            {/* Botón cerrar */}
-            <button
-              onClick={onClose}
-              aria-label={closeLabel}
-              className="absolute top-3 right-3 text-slate-400 hover:text-white"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            {/* Header fijo */}
+            <div className="flex-shrink-0 px-6 pt-6 pb-4 border-b border-slate-700/50">
+              {/* Botón cerrar */}
+              <button
+                onClick={onClose}
+                aria-label={closeLabel}
+                className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
 
-            {/* Título */}
-            {title && <h3 className="text-xl font-semibold mb-4">{title}</h3>}
+              {/* Título */}
+              {title && <h3 className="text-xl font-semibold pr-8">{title}</h3>}
+            </div>
 
-            {/* Contenido */}
-            <div>{children}</div>
+            {/* Contenido con scroll */}
+            <div className="flex-1 overflow-y-auto px-6 py-4 custom-scroll">
+              {children}
+            </div>
           </motion.div>
         </motion.div>
       )}

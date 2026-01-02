@@ -1,165 +1,12 @@
-import { useState, useRef, useEffect } from "react";
-import { useVoiceRecognition } from "./useVoiceRecognition";
-import { useAnimation } from "framer-motion";
-import { axiosInstance } from "../services/authService";
+import { useRef, useState } from "react";
 
-export interface Message {
-  sender: "Tú" | "CasaIA";
-  text: string;
-  timestamp: Date;
-  type: "text";
-}
-
-export function useVoiceChat(options?: { prefetchHistory?: boolean }) {
-  const [messages, setMessages] = useState<Message[]>([]);
+// Stub hook - no backend functionality
+export function useVoiceChat() {
+  const [messages] = useState<Array<{ sender: string; text: string }>>([]);
   const [text, setText] = useState("");
-  const [voiceActive, setVoiceActive] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
+  const [listening] = useState(false);
+  const [isTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const waveControls = useAnimation();
-
-  useEffect(() => {
-    if (!options?.prefetchHistory) return;
-    const fetchHistory = async () => {
-      try {
-        const response = await axiosInstance.get(`/nlp/nlp/history?limit=50`);
-        const data = response.data;
-        const formattedMessages: Message[] = data.history.flatMap(
-          (item: any) => {
-            const msgs: Message[] = [];
-            if (item.user_message) {
-              msgs.push({
-                sender: "Tú",
-                text: item.user_message,
-                timestamp: new Date(),
-                type: "text",
-              });
-            }
-            if (item.assistant_message) {
-              msgs.push({
-                sender: "CasaIA",
-                text: item.assistant_message,
-                timestamp: new Date(),
-                type: "text",
-              });
-            }
-            return msgs;
-          }
-        );
-        setMessages(formattedMessages);
-      } catch (error) {
-      }
-    };
-    fetchHistory();
-  }, [options?.prefetchHistory]);
-
-  // Reconocimiento de voz - todo el procesamiento se hace en el backend
-  const { listening, startListening, stopListening } = useVoiceRecognition({
-    onStart: () => startWaveAnimation(),
-    onEnd: () => {
-      stopWaveAnimation();
-      setVoiceActive(false);
-    },
-    onAudioProcessed: (apiResponse: any) => {
-      if (apiResponse) {
-        // Añadir el mensaje del usuario al chat
-        if (apiResponse.transcribed_text) {
-          const userMessage: Message = {
-            sender: "Tú",
-            text: apiResponse.transcribed_text,
-            timestamp: new Date(),
-            type: "text",
-          };
-          setMessages((prev) => [...prev, userMessage]);
-        }
-
-        // Añadir la respuesta de la IA al chat
-        if (apiResponse.nlp_response) {
-          const aiMessage: Message = {
-            sender: "CasaIA",
-            text: apiResponse.nlp_response,
-            timestamp: new Date(),
-            type: "text",
-          };
-          setMessages((prev) => [...prev, aiMessage]);
-        }
-      } else {
-      }
-    },
-  });
-
-  // Auto scroll de mensajes
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, voiceActive]);
-
-  const startWaveAnimation = () => {
-    waveControls.start({
-      scale: [1, 1.3, 1],
-      opacity: [0.5, 1, 0.5],
-      transition: { duration: 0.8, repeat: Infinity, ease: "easeInOut" },
-    });
-  };
-
-  const stopWaveAnimation = () => {
-    waveControls.stop();
-  };
-
-  const sendMessage = (msgText?: string) => {
-    const finalText = msgText ?? text;
-    if (!finalText.trim()) return;
-
-    const userMessage: Message = {
-      sender: "Tú",
-      text: finalText,
-      timestamp: new Date(),
-      type: "text",
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setText("");
-    respondAI(userMessage);
-  };
-
-  const respondAI = async (msg: Message) => {
-    setIsTyping(true);
-
-    try {
-      const response = await axiosInstance.post(`/nlp/nlp/query`, {
-        prompt: msg.text,
-      });
-
-      const data = response.data;
-      const aiResponseText =
-        data.response || "Lo siento, no pude obtener una respuesta.";
-
-      setIsTyping(false);
-      const aiMessage: Message = {
-        sender: "CasaIA",
-        text: aiResponseText,
-        timestamp: new Date(),
-        type: "text",
-      };
-      setMessages((prev) => [...prev, aiMessage]);
-    } catch (error) {
-      setIsTyping(false);
-      const errorMessage: Message = {
-        sender: "CasaIA",
-        text: "Lo siento, hubo un error al comunicarse con la IA.",
-        timestamp: new Date(),
-        type: "text",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    }
-  };
-
-  const toggleVoiceActive = () => {
-    setVoiceActive((prev) => !prev);
-    if (!voiceActive) startListening();
-    else stopListening();
-  };
-
-  const clearMessages = () => setMessages([]);
 
   return {
     messages,
@@ -167,12 +14,8 @@ export function useVoiceChat(options?: { prefetchHistory?: boolean }) {
     setText,
     listening,
     isTyping,
-    voiceActive,
-    toggleVoiceActive,
-    sendMessage,
-    clearMessages,
+    toggleVoiceActive: () => { },
+    sendMessage: () => { },
     messagesEndRef,
-    waveControls,
-    SpeechSynthesisSupported: "speechSynthesis" in window,
   };
 }

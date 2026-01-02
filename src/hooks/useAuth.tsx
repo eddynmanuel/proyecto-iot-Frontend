@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import authService, { type LoginResponse } from "../services/authService";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -35,18 +34,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const checkAuth = useCallback(async () => {
     setIsLoading(true);
     const storedAccessToken = localStorage.getItem("access_token");
-    const refreshToken = localStorage.getItem("refresh_token");
+    const storedUser = localStorage.getItem("user");
     setAccessToken(storedAccessToken);
 
-    if (storedAccessToken && refreshToken) {
+    if (storedAccessToken && storedUser) {
       try {
-        const profile = await authService.getProfile();
+        const profile = JSON.parse(storedUser);
         setUser(profile);
         setIsAuthenticated(true);
-        // La lógica de isPostLoginTransition se ha movido a la función login
       } catch (error: any) {
         localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user");
         setAccessToken(null);
         setIsAuthenticated(false);
         setUser(null);
@@ -65,17 +63,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const login = useCallback(async (username: string, password: string) => {
     try {
-      const response: LoginResponse = await authService.login(
-        username,
-        password
-      );
-      localStorage.setItem("access_token", response.access_token);
-      localStorage.setItem("refresh_token", response.refresh_token);
-      setAccessToken(response.access_token);
-      const profile = await authService.getProfile();
-      setUser(profile);
+      // Autenticación local simple - acepta cualquier usuario/contraseña
+      // En producción, aquí podrías validar contra usuarios predefinidos
+      const mockUser = {
+        id: 1,
+        username: username,
+        email: `${username}@example.com`,
+        name: username.charAt(0).toUpperCase() + username.slice(1),
+      };
+
+      const mockToken = `mock_token_${Date.now()}`;
+
+      localStorage.setItem("access_token", mockToken);
+      localStorage.setItem("user", JSON.stringify(mockUser));
+      setAccessToken(mockToken);
+      setUser(mockUser);
       setIsAuthenticated(true);
       setIsPostLoginTransition(true);
+
       setTimeout(() => {
         setIsPostLoginTransition(false);
       }, 2000); // Duración de la animación de la puerta
@@ -88,10 +93,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const logout = useCallback(() => {
-    authService.logout();
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUser(null);
     setAccessToken(null);
+    window.location.href = "/login";
   }, []);
 
   return (

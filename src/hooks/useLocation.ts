@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { axiosInstance } from "../services/authService";
 
 interface LocationData {
   latitude: number;
@@ -23,7 +22,7 @@ export function useLocation() {
     }
   }, []);
 
-  // Actualizar ubicación y guardarla en el servidor
+  // Actualizar ubicación y guardarla localmente
   const handleLocationChange = useCallback(
     async (latitude: number, longitude: number, locationName: string) => {
       const newLocation: LocationData = {
@@ -34,15 +33,6 @@ export function useLocation() {
 
       setLocation(newLocation);
       localStorage.setItem("userLocation", JSON.stringify(newLocation));
-
-      // Guardar en el servidor (backend)
-      try {
-        await axiosInstance.put("/weather/coordinates", {
-          latitude,
-          longitude,
-        });
-      } catch (error: any) {
-      }
     },
     []
   );

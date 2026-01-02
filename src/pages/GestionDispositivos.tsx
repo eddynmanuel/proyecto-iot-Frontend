@@ -76,11 +76,10 @@ export default function GestionDispositivos() {
           onClick={() => setActiveTab("control")}
           role="tab"
           aria-selected={activeTab === "control"}
-          className={`min-h-[52px] sm:min-h-[48px] px-4 sm:px-5 md:px-6 py-3 sm:py-3.5 font-medium transition-colors duration-300 flex items-center justify-center sm:justify-start gap-2 text-sm sm:text-base md:text-lg relative ${
-            activeTab === "control"
-              ? colors.text
-              : `${colors.mutedText} ${colors.buttonHover}`
-          }`}
+          className={`min-h-[52px] sm:min-h-[48px] px-4 sm:px-5 md:px-6 py-3 sm:py-3.5 font-medium transition-colors duration-300 flex items-center justify-center sm:justify-start gap-2 text-sm sm:text-base md:text-lg relative ${activeTab === "control"
+            ? colors.text
+            : `${colors.mutedText} ${colors.buttonHover}`
+            }`}
         >
           <Activity className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
           <span className="text-center sm:text-left leading-tight font-semibold">
@@ -106,69 +105,68 @@ export default function GestionDispositivos() {
               transition={{ duration: 0.3 }}
               role="tabpanel"
             >
-              <div className="mb-5 sm:mb-6 flex flex-col xl:flex-row md:grid md:grid-cols-[1fr_1fr] gap-2 sm:gap-3">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {["Todos", ...deviceTypes].map((type) => (
-                    <motion.button
-                      key={type}
-                      onClick={() =>
-                        setDeviceTypeFilter(type === "Todos" ? "Todos" : type)
-                      }
-                      className={`min-h-[48px] px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm border ${
-                        deviceTypeFilter === type
-                          ? colors.buttonActive
-                          : `${colors.buttonInactive} ${colors.buttonHover}`
+              <div className="mb-5 sm:mb-6 flex flex-wrap gap-2 sm:gap-3">
+                {/* Botones de tipo de dispositivo */}
+                {["Todos", ...deviceTypes].map((type) => (
+                  <motion.button
+                    key={type}
+                    onClick={() =>
+                      setDeviceTypeFilter(type === "Todos" ? "Todos" : type)
+                    }
+                    className={`flex-1 min-w-[120px] h-12 px-4 py-2.5 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm border ${deviceTypeFilter === type
+                        ? colors.buttonActive
+                        : `${colors.buttonInactive} ${colors.buttonHover}`
                       }`}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {type === "Todos" ? (
-                        <Filter className="w-4 h-4 flex-shrink-0" />
-                      ) : (
-                        getDeviceIcon({ device_type: type } as Device)
-                      )}
-                      <span>
-                        {type === "Todos"
-                          ? "Todos"
-                          : type.charAt(0).toUpperCase() + type.slice(1)}
-                      </span>
-                    </motion.button>
-                  ))}
-                </div>
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {type === "Todos" ? (
+                      <Filter className="w-4 h-4 flex-shrink-0" />
+                    ) : (
+                      getDeviceIcon({ device_type: type } as Device)
+                    )}
+                    <span>
+                      {type === "Todos"
+                        ? "Todos"
+                        : type.charAt(0).toUpperCase() + type.slice(1)}
+                    </span>
+                  </motion.button>
+                ))}
 
-                <div className="flex gap-2">
-                  {[
-                    { name: "Encendidos", icon: CheckCircle, color: "green" },
-                    { name: "Apagados", icon: XCircle, color: "red" },
-                  ].map((f) => (
-                    <motion.button
-                      key={f.name}
-                      onClick={() => {
-                        if (statusFilter === f.name) {
-                          setStatusFilter("Todos");
-                        } else {
-                          setStatusFilter(f.name);
-                        }
-                      }}
-                      className={`flex-1 min-h-[48px] px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm border ${
-                        statusFilter === f.name
-                          ? f.color === "green"
-                            ? colors.successChip
-                            : colors.dangerChip
-                          : `${colors.buttonInactive} ${colors.buttonHover}`
+                {/* Separador visual */}
+                <div className="w-0.5 h-12 bg-slate-700/50 mx-2 hidden lg:block"></div>
+
+                {/* Botones de estado */}
+                {[
+                  { name: "Encendidos", icon: CheckCircle, color: "green" },
+                  { name: "Apagados", icon: XCircle, color: "red" },
+                ].map((f) => (
+                  <motion.button
+                    key={f.name}
+                    onClick={() => {
+                      if (statusFilter === f.name) {
+                        setStatusFilter("Todos");
+                      } else {
+                        setStatusFilter(f.name);
+                      }
+                    }}
+                    className={`flex-1 min-w-[120px] h-12 px-4 py-2.5 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm border ${statusFilter === f.name
+                        ? f.color === "green"
+                          ? colors.successChip
+                          : colors.dangerChip
+                        : `${colors.buttonInactive} ${colors.buttonHover}`
                       }`}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {React.createElement(f.icon, {
-                        className: "w-4 h-4 flex-shrink-0",
-                      })}
-                      <span>{f.name}</span>
-                    </motion.button>
-                  ))}
-                </div>
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {React.createElement(f.icon, {
+                      className: "w-4 h-4 flex-shrink-0",
+                    })}
+                    <span>{f.name}</span>
+                  </motion.button>
+                ))}
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5 mb-6 sm:mb-7 md:mb-8">
@@ -244,26 +242,23 @@ export default function GestionDispositivos() {
                       transition={{ duration: 0.4, delay: i * 0.1 }}
                     >
                       <SimpleCard
-                        className={`h-full p-4 sm:p-5 md:p-6 flex items-center gap-3 sm:gap-4 md:gap-5 transition-all duration-300 border ${
-                          colors.cardBg
-                        } ${colors.cardHover} ${
-                          device.on ? colors.energyBorder : colors.tempBorder
-                        }`}
+                        className={`h-full p-4 sm:p-5 md:p-6 flex items-center gap-3 sm:gap-4 md:gap-5 transition-all duration-300 border ${colors.cardBg
+                          } ${colors.cardHover} ${device.on ? colors.energyBorder : colors.tempBorder
+                          }`}
                       >
                         <div className="flex-shrink-0">
                           <div
-                            className={`w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 rounded-full flex items-center justify-center transition-all duration-300 ${
-                              device.on ? colors.deviceOn : colors.deviceOff
-                            }`}
+                            className={`w-12 h-12 sm:w-13 sm:h-13 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300 ${device.on ? colors.deviceOn : colors.deviceOff
+                              }`}
                           >
                             {getDeviceIcon(device)}
                           </div>
                         </div>
 
-                        <div className="flex-1 min-w-0 space-y-1.5 sm:space-y-2">
+                        <div className="flex-1 min-w-0 space-y-1 sm:space-y-1.5">
                           <div className="flex items-center gap-2">
                             <span
-                              className={`text-sm sm:text-base md:text-lg lg:text-xl font-bold ${colors.text} font-inter whitespace-normal`}
+                              className={`text-sm sm:text-base md:text-lg font-bold ${colors.text} font-inter whitespace-normal`}
                             >
                               {device.name}
                             </span>
@@ -278,13 +273,12 @@ export default function GestionDispositivos() {
                         <div className="flex-shrink-0">
                           <button
                             onClick={() => toggleDevice(device.id)}
-                            className={`w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110 active:scale-95 border-2 ${
-                              device.on
-                                ? `bg-red-500 hover:bg-red-600 border-red-400/50 text-white`
-                                : `bg-green-500 hover:bg-green-600 border-green-400/50 text-white`
-                            }`}
+                            className={`w-12 h-12 sm:w-13 sm:h-13 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110 active:scale-95 border-2 ${device.on
+                              ? `bg-red-500 hover:bg-red-600 border-red-400/50 text-white`
+                              : `bg-green-500 hover:bg-green-600 border-green-400/50 text-white`
+                              }`}
                           >
-                            <Power className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9" />
+                            <Power className="w-6 h-6 sm:w-6 sm:h-6 md:w-7 md:h-7" />
                           </button>
                         </div>
                       </SimpleCard>

@@ -90,6 +90,7 @@ export default function App() {
     setSelectedMenu(initial);
   }, [menuByPath, isAuthenticated]);
 
+
   useEffect(() => {
     const handler = () => {
       const m = menuByPath[window.location.pathname];
@@ -98,6 +99,18 @@ export default function App() {
     window.addEventListener("popstate", handler);
     return () => window.removeEventListener("popstate", handler);
   }, [menuByPath]);
+
+  // Listen for custom navigation events
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.menu) {
+        setSelectedMenu(customEvent.detail.menu);
+      }
+    };
+    window.addEventListener("navigate", handler);
+    return () => window.removeEventListener("navigate", handler);
+  }, []);
 
   useEffect(() => {
     const path = pathByMenu[selectedMenu] || "/inicio";

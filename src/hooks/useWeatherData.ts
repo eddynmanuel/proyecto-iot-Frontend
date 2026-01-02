@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { axiosInstance } from "../services/authService";
 
 interface WeatherData {
   temperature: number;
@@ -38,32 +37,28 @@ export function useWeatherData() {
         setLoading(true);
         setError(null);
 
-        const response = await axiosInstance.get("/weather", {
-          params: { latitude, longitude },
-        });
+        // Mock weather data
+        const weatherData = {
+          temperature: Math.floor(Math.random() * 15) + 15, // 15-30°C
+          description: ["Soleado", "Parcialmente nublado", "Nublado", "Lluvia ligera"][Math.floor(Math.random() * 4)],
+          humidity: Math.floor(Math.random() * 40) + 40, // 40-80%
+          wind_speed: Math.floor(Math.random() * 20) + 5, // 5-25 km/h
+          feels_like: Math.floor(Math.random() * 15) + 15,
+          pressure: Math.floor(Math.random() * 50) + 1000, // 1000-1050 hPa
+          visibility: Math.floor(Math.random() * 5000) + 5000, // 5-10 km
+          location_name: "Local",
+          daily: {
+            time: Array.from({ length: 7 }, (_, i) => new Date(Date.now() + i * 86400000).toISOString()),
+            temperature_2m_max: Array.from({ length: 7 }, () => Math.floor(Math.random() * 10) + 25),
+            temperature_2m_min: Array.from({ length: 7 }, () => Math.floor(Math.random() * 10) + 15),
+            weather_code: Array.from({ length: 7 }, () => Math.floor(Math.random() * 4)),
+            precipitation_sum: Array.from({ length: 7 }, () => Math.floor(Math.random() * 10)),
+          },
+        };
 
-        if (response.data && response.data.current) {
-          // La respuesta tiene la estructura: { current: {temp, relative_humidity_2m, ...}, hourly: {...}, daily: {...} }
-          const current = response.data.current;
-          const weatherData = {
-            temperature: current.temp || current.temperature_2m,
-            description: current.weather_description || "Desconocido",
-            humidity: current.relative_humidity_2m,
-            wind_speed: current.wind_speed_10m,
-            feels_like: current.apparent_temperature,
-            pressure: current.pressure,
-            visibility: current.visibility,
-            location_name: response.data.timezone,
-            daily: response.data.daily, // Incluir datos diarios para pronóstico
-          };
-
-          setWeather(weatherData);
-        }
+        setWeather(weatherData);
       } catch (err: any) {
-        const errorMessage =
-          err?.response?.data?.detail ||
-          err?.message ||
-          "Error al obtener clima";
+        const errorMessage = err?.message || "Error al obtener clima";
         setError(errorMessage);
       } finally {
         setLoading(false);

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { axiosInstance } from "../services/authService";
 
 interface TimeData {
   current_time: string; // ISO 8601 format
@@ -28,25 +27,19 @@ export function useTimeData() {
       setLoading(true);
       setError(null);
 
-      const response = await axiosInstance.get("/weather/time", {
-        params: { latitude, longitude },
+      // Use local time instead of API
+      const now = new Date();
+      setTimeData({
+        current_time: now.toISOString(),
+        timezone_name: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone_offset_seconds: -now.getTimezoneOffset() * 60,
+        location_name: "Local",
+        utc_time: now.toUTCString(),
       });
 
-      if (response.data) {
-        setTimeData({
-          current_time: response.data.current_time,
-          timezone_name: response.data.timezone_name,
-          timezone_offset_seconds: response.data.timezone_offset_seconds,
-          location_name: response.data.location_name,
-          utc_time: response.data.utc_time,
-        });
-
-        // Sincronizar hora local con la hora del servidor
-        setCurrentTime(new Date(response.data.current_time));
-      }
+      setCurrentTime(now);
     } catch (err: any) {
-      const errorMessage =
-        err?.response?.data?.detail || err?.message || "Error al obtener hora";
+      const errorMessage = err?.message || "Error al obtener hora";
       setError(errorMessage);
     } finally {
       setLoading(false);

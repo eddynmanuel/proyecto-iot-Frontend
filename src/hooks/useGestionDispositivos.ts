@@ -2,8 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { axiosInstance } from "../services/authService";
-import { useWebSocket } from "./useWebSocket";
 
 export interface Device {
   id: number;
@@ -15,8 +13,18 @@ export interface Device {
   last_updated: string;
 }
 
+// Mock devices data
+const mockDevices: Device[] = [
+  { id: 1, name: "Luz Sala", power: "60W", on: true, device_type: "luz", state_json: { status: "ON" }, last_updated: new Date().toISOString() },
+  { id: 2, name: "Luz Cocina", power: "40W", on: false, device_type: "luz", state_json: { status: "OFF" }, last_updated: new Date().toISOString() },
+  { id: 3, name: "Ventilador", power: "75W", on: true, device_type: "ventilador", state_json: { status: "ON" }, last_updated: new Date().toISOString() },
+  { id: 4, name: "Aire Acondicionado", power: "1500W", on: false, device_type: "clima", state_json: { status: "OFF" }, last_updated: new Date().toISOString() },
+  { id: 5, name: "Puerta Principal", power: "10W", on: false, device_type: "puerta", state_json: { status: "CLOSE" }, last_updated: new Date().toISOString() },
+];
+
+const mockDeviceTypes = ["luz", "ventilador", "clima", "puerta"];
+
 export function useGestionDispositivos() {
-  const { message } = useWebSocket();
   const [devices, setDevices] = useState<Device[]>([]);
   const [allDevices, setAllDevices] = useState<Device[]>([]);
   const [deviceTypes, setDeviceTypes] = useState<string[]>([]);
@@ -26,42 +34,11 @@ export function useGestionDispositivos() {
   const [statusFilter, setStatusFilter] = useState<string>("Todos");
 
   useEffect(() => {
-    if (message && message.id && message.state) {
-      setDevices((prevDevices) =>
-        prevDevices.map((device) =>
-          device.id === message.id
-            ? {
-                ...device,
-                on:
-                  message.state.status === "ON" ||
-                  message.state.status === "OPEN",
-                state_json: message.state,
-                last_updated: new Date().toISOString(),
-              }
-            : device
-        )
-      );
-    }
-  }, [message]);
-
-  useEffect(() => {
     const loadAllDevices = async () => {
       try {
-        const typesResponse = await axiosInstance.get(`/iot/device_types`);
-        setDeviceTypes(typesResponse.data.device_types);
-
-        const statesResponse = await axiosInstance.get(`/iot/device_states`);
-        const mappedDevices = statesResponse.data.map((item: any) => ({
-          id: item.id,
-          name: item.device_name.replace(/_/g, " "),
-          power: "",
-          on: item.state_json.status === "ON",
-          device_type: item.device_type,
-          state_json: item.state_json,
-          last_updated: item.last_updated,
-        }));
-        setAllDevices(mappedDevices);
-        setDevices(mappedDevices); // Inicialmente, mostrar todos los dispositivos
+        setDeviceTypes(mockDeviceTypes);
+        setAllDevices(mockDevices);
+        setDevices(mockDevices);
       } catch (error) {
       }
     };
@@ -72,10 +49,13 @@ export function useGestionDispositivos() {
 
   const loadEnergyData = async () => {
     try {
-      const response = await axiosInstance.get<number[]>(`/iot/energy`);
-      setEnergyHistory(response.data);
-      if (response.data.length > 0) {
-        setEnergyUsage(response.data[response.data.length - 1]);
+      // Mock energy history data
+      const mockHistory = Array.from({ length: 24 }, (_, i) =>
+        Math.floor(Math.random() * 500) + 200
+      );
+      setEnergyHistory(mockHistory);
+      if (mockHistory.length > 0) {
+        setEnergyUsage(mockHistory[mockHistory.length - 1]);
       }
     } catch (error) {
     }
@@ -115,6 +95,12 @@ export function useGestionDispositivos() {
       )
     );
 
+    setAllDevices((prevDevices) =>
+      prevDevices.map((device) =>
+        device.id === id ? { ...device, on: !device.on } : device
+      )
+    );
+
     const deviceToToggle = devices.find((device) => device.id === id);
     if (!deviceToToggle) return;
 
@@ -124,15 +110,14 @@ export function useGestionDispositivos() {
           ? "CLOSE"
           : "OPEN"
         : deviceToToggle.on
-        ? "OFF"
-        : "ON";
+          ? "OFF"
+          : "ON";
 
     try {
-      await axiosInstance.put(`/iot/device_states/${id}`, {
-        new_state: { status: newStatus },
-      });
-
+      // Mock API call - just update local state
+      console.log(`Device ${id} toggled to ${newStatus}`);
     } catch (error) {
+      // Revert on error
       setDevices((prevDevices) =>
         prevDevices.map((device) =>
           device.id === id ? { ...device, on: !device.on } : device

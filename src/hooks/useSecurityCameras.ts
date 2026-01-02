@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { getValidAccessToken } from "../services/authService";
+import { useState, useCallback } from "react";
 
 interface CameraBackendInfo {
   id: string;
@@ -11,120 +10,60 @@ interface CameraBackendInfo {
   recognition_enabled: boolean;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-async function getToken(): Promise<string | null> {
-  return await getValidAccessToken();
-}
+// Mock cameras data
+const mockCameras: CameraBackendInfo[] = [
+  {
+    id: "door",
+    label: "Puerta Principal",
+    source: 0,
+    active: false,
+    recognition_enabled: true,
+  },
+  {
+    id: "living",
+    label: "Sala de Estar",
+    source: 1,
+    active: false,
+    recognition_enabled: false,
+  },
+  {
+    id: "kitchen",
+    label: "Cocina",
+    source: 2,
+    active: false,
+    recognition_enabled: false,
+  },
+];
 
 export function useSecurityCameras() {
   const [systemOn, setSystemOnState] = useState(false);
-  const [camerasList, setCamerasList] = useState<CameraBackendInfo[]>([]);
-  const [cameraStates, setCameraStates] = useState<Record<string, boolean>>({});
-
-  const fetchCameras = useCallback(async () => {
-    const token = await getToken();
-    if (!token) {
-      return;
-    }
-
-    try {
-      let response = await fetch(`${API_BASE_URL}/cameras`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.status === 401) {
-        const newToken = await getToken();
-        if (!newToken) throw new Error("Sesión expirada");
-        response = await fetch(`${API_BASE_URL}/cameras`, {
-          headers: { Authorization: `Bearer ${newToken}` },
-        });
-      }
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      const backendCameras: CameraBackendInfo[] = Object.values(data.cameras);
-      setCamerasList(backendCameras);
-
-      const initialCameraStates: Record<string, boolean> = {};
-      backendCameras.forEach((cam) => {
-        initialCameraStates[cam.id] = cam.active;
-      });
-      setCameraStates(initialCameraStates);
-    } catch (error) {
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchCameras();
-  }, [fetchCameras]);
+  const [camerasList] = useState<CameraBackendInfo[]>(mockCameras);
+  const [cameraStates, setCameraStates] = useState<Record<string, boolean>>({
+    door: false,
+    living: false,
+    kitchen: false,
+  });
 
   const toggleCamera = useCallback(
-    async (cameraId: string) => {
+    (cameraId: string) => {
       if (!systemOn) return;
 
-      const token = await getToken();
-      if (!token) {
-        return;
-      }
-
-      const currentCameraState = cameraStates[cameraId];
-      const newCameraState = !currentCameraState;
-      const endpoint = newCameraState ? "start" : "stop";
-
-      try {
-        let response = await fetch(
-          `${API_BASE_URL}/cameras/${cameraId}/${endpoint}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ recognition_enabled: false }),
-          }
-        );
-        if (response.status === 401) {
-          const newToken = await getToken();
-          if (!newToken) throw new Error("Sesión expirada");
-          response = await fetch(
-            `${API_BASE_URL}/cameras/${cameraId}/${endpoint}`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${newToken}`,
-              },
-              body: JSON.stringify({ recognition_enabled: false }),
-            }
-          );
-        }
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // Si la operación en el backend fue exitosa, actualiza el estado local
-        setCameraStates((prev) => ({
-          ...prev,
-          [cameraId]: newCameraState,
-        }));
-      } catch (error) {
-      }
+      setCameraStates((prev) => ({
+        ...prev,
+        [cameraId]: !prev[cameraId],
+      }));
     },
-    [systemOn, cameraStates]
+    [systemOn]
   );
 
   const toggleSystem = useCallback(
     (state: boolean) => {
       setSystemOnState(state);
       if (!state) {
-        // Si apagas el sistema, desactiva todas las cámaras en el frontend
-        // y también en el backend si es necesario (esto podría ser una llamada API separada)
+        // Si apagas el sistema, desactiva todas las cámaras
         const newStates: Record<string, boolean> = {};
         Object.keys(cameraStates).forEach((camId) => {
           newStates[camId] = false;
-          // Aquí podrías añadir llamadas al backend para detener cada cámara si systemOn afecta a todas
         });
         setCameraStates(newStates);
       }
@@ -144,7 +83,7 @@ export function useSecurityCameras() {
   return {
     systemOn,
     setSystemOn: toggleSystem,
-    camerasList, // Exporta la lista de cámaras del backend
+    camerasList,
     cameraStates,
     toggleCamera,
     activeCameras,

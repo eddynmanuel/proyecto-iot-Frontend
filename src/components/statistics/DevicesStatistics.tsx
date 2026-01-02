@@ -12,40 +12,30 @@ export default function DevicesStatistics() {
 
   const [deviceCountHistory, setDeviceCountHistory] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchDeviceCountHistory = async () => {
-      try {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-          throw new Error("No authentication token found.");
-        }
+    // Generate mock device count history (last 24 hours)
+    const generateMockHistory = () => {
+      const history: number[] = [];
+      const baseCount = devices.length;
 
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/iot/device_count_history`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data: number[] = await response.json();
-        setDeviceCountHistory(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      // Generate 24 data points (one per hour)
+      for (let i = 0; i < 24; i++) {
+        // Simulate fluctuation in device count
+        const variation = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+        const count = Math.max(0, Math.min(baseCount + variation, baseCount + 2));
+        history.push(count);
       }
+
+      return history;
     };
 
-    fetchDeviceCountHistory();
-  }, []);
+    // Simulate loading delay
+    setTimeout(() => {
+      setDeviceCountHistory(generateMockHistory());
+      setLoading(false);
+    }, 500);
+  }, [devices.length]);
 
   const getSectionTheme = (type: "devices") => {
     const themeMap = {
@@ -63,8 +53,7 @@ export default function DevicesStatistics() {
   const renderChart = (
     type: "devices",
     data: number[],
-    loading: boolean,
-    error: string | null
+    loading: boolean
   ) => {
     const chartColorMap = {
       devices: "#8b5cf6", // Color violeta para dispositivos
@@ -103,42 +92,6 @@ export default function DevicesStatistics() {
             fontWeight="500"
           >
             Cargando...
-          </text>
-        </svg>
-      );
-    }
-
-    if (error) {
-      return (
-        <svg viewBox="0 0 1000 300" className="w-full h-full">
-          <defs>
-            <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#ef4444" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          {[0, 1, 2, 3, 4].map((i) => (
-            <line
-              key={i}
-              x1="50"
-              y1={50 + i * 50}
-              x2="950"
-              y2={50 + i * 50}
-              stroke="#ef4444"
-              strokeWidth="1"
-              opacity="0.1"
-            />
-          ))}
-          <text
-            x="500"
-            y="160"
-            textAnchor="middle"
-            fill="#ef4444"
-            opacity="0.6"
-            fontSize="20"
-            fontWeight="500"
-          >
-            Error al cargar datos
           </text>
         </svg>
       );
@@ -256,10 +209,10 @@ export default function DevicesStatistics() {
       <div
         className={`h-36 md:h-40 flex items-center justify-center mb-3 rounded-lg bg-gradient-to-br ${sectionTheme.card} p-2 border ${sectionTheme.border}`}
       >
-        {renderChart("devices", deviceCountHistory, loading, error)}
+        {renderChart("devices", deviceCountHistory, loading)}
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        {!loading && !error && deviceCountHistory.length > 0 && (
+        {!loading && deviceCountHistory.length > 0 && (
           <>
             {[
               {
@@ -271,7 +224,7 @@ export default function DevicesStatistics() {
                 value:
                   Math.round(
                     deviceCountHistory.reduce((a, b) => a + b) /
-                      deviceCountHistory.length
+                    deviceCountHistory.length
                   ) || 0,
               },
               { label: "Máximo", value: Math.max(...deviceCountHistory) || 0 },

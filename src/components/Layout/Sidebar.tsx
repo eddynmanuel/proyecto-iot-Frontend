@@ -64,18 +64,17 @@ export default function HamburgerMenu({
   /* ==========================================================
      CLASES CONDICIONALES SEGÚN TEMA (más gris en light)
   ========================================================== */
-  const menuButtonBase = `flex items-center ${
-    isSidebarOpen ? "justify-start px-5" : "justify-center"
-  } gap-3 text-sm font-medium py-2 rounded-xl w-11/12 transition-all duration-300 overflow-hidden border`
+  const menuButtonBase = `flex items-center ${isSidebarOpen ? "justify-start px-5" : "justify-center"
+    } gap-3 text-sm font-medium py-2 rounded-xl w-11/12 transition-all duration-300 overflow-hidden border`
 
   const menuButtonLight = {
     inactive: "bg-gray-100/80 border-gray-300 hover:bg-gray-200 hover:border-gray-400 text-gray-700",
-    active:   "bg-gray-800 border-gray-600 text-white shadow-lg"
+    active: "bg-gray-800 border-gray-600 text-white shadow-lg"
   }
 
   const menuButtonDark = {
     inactive: `${colors.cardHover} border-gray-600/40 hover:border-gray-500 text-gray-300`,
-    active:   `bg-gradient-to-r ${colors.primary} text-white border-gray-500 shadow-lg`
+    active: `bg-gradient-to-r ${colors.primary} text-white border-gray-500 shadow-lg`
   }
 
   const buttonStyles = currentTheme === "light" ? menuButtonLight : menuButtonDark
@@ -94,7 +93,7 @@ export default function HamburgerMenu({
 
       {/* ANIMACIÓN DE CIERRE DE SESIÓN - PUERTAS */}
       {isLoggingOut && (
-        <div 
+        <div
           className="fixed inset-0 z-[150] overflow-hidden"
           style={{
             background: currentTheme === "light"
@@ -123,9 +122,8 @@ export default function HamburgerMenu({
           <button
             onClick={() => setIsSidebarOpen(true)}
             aria-label="Abrir menú"
-            className={`h-11 w-11 flex flex-col justify-center items-center rounded-xl bg-gradient-to-r ${
-              currentTheme === "light" ? "from-gray-200 to-gray-300" : colors.primary
-            } shadow-lg transition-transform duration-200 active:scale-95 text-gray-700`}
+            className={`h-11 w-11 flex flex-col justify-center items-center rounded-xl bg-gradient-to-r ${currentTheme === "light" ? "from-gray-200 to-gray-300" : colors.primary
+              } shadow-lg transition-transform duration-200 active:scale-95 text-gray-700`}
           >
             <span className="block h-[2px] w-6 bg-current rounded-sm mb-[3px]" />
             <span className="block h-[2px] w-6 bg-current rounded-sm mb-[3px]" />
@@ -152,8 +150,8 @@ export default function HamburgerMenu({
           flex flex-col items-center justify-between py-8 px-6 pt-[1.5rem] pb-6 pl-4 pr-4 
           transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
           z-[90] transform
-          ${isSidebarOpen 
-            ? "translate-x-0 opacity-100 w-[86vw] sm:w-72 md:w-80" 
+          ${isSidebarOpen
+            ? "translate-x-0 opacity-100 w-[86vw] sm:w-72 md:w-80"
             : "-translate-x-full md:translate-x-0 opacity-95 w-20"}
           ${isLoggingOut ? "pointer-events-none opacity-50" : ""}`}
       >
@@ -164,11 +162,10 @@ export default function HamburgerMenu({
               <button
                 onClick={() => setIsSidebarOpen(true)}
                 disabled={isLoggingOut}
-                className={`w-11/12 h-12 flex flex-col justify-center items-center gap-[3px] rounded-2xl transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-                  currentTheme === "light"
-                    ? "bg-gray-200 text-gray-700"
-                    : `${colors.primary} ${colors.text}`
-                }`}
+                className={`w-11/12 h-12 flex flex-col justify-center items-center gap-[3px] rounded-2xl border transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${currentTheme === "light"
+                    ? "bg-gray-200 text-gray-700 border-gray-300"
+                    : `${colors.primary} ${colors.text} border-gray-500/40`
+                  }`}
               >
                 <span className="block h-[2px] w-6 bg-current rounded-sm" />
                 <span className="block h-[2px] w-6 bg-current rounded-sm" />
@@ -182,20 +179,17 @@ export default function HamburgerMenu({
                   onClick={() => setIsSidebarOpen(false)}
                   disabled={isLoggingOut}
                   aria-label="Cerrar menú"
-                  className={`h-12 w-14.5 flex items-center justify-center rounded-xl transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] active:scale-[0.97] flex-shrink-0 ${
-                    currentTheme === "light"
+                  className={`h-12 w-14.5 flex items-center justify-center rounded-xl transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] active:scale-[0.97] flex-shrink-0 ${currentTheme === "light"
                       ? "bg-gray-200 text-gray-700"
                       : `${colors.primary}`
-                  }`}
+                    }`}
                 >
-                  <Home className={`w-6 h-6 transition-transform duration-300 hover:scale-110 ${
-                    currentTheme === "light" ? "text-gray-700" : colors.icon
-                  }`} />
+                  <Home className={`w-6 h-6 transition-transform duration-300 hover:scale-110 ${currentTheme === "light" ? "text-gray-700" : colors.icon
+                    }`} />
                 </button>
 
-                <h1 className={`text-xl md:text-2xl font-bold bg-gradient-to-r ${
-                  currentTheme === "light" ? "from-gray-600 to-gray-800" : colors.primary
-                } bg-clip-text text-transparent tracking-tight whitespace-nowrap`}>
+                <h1 className={`text-xl md:text-2xl font-bold bg-gradient-to-r ${currentTheme === "light" ? "from-gray-600 to-gray-800" : colors.primary
+                  } bg-clip-text text-transparent tracking-tight whitespace-nowrap`}>
                   SmartHome
                 </h1>
               </div>
@@ -220,13 +214,12 @@ export default function HamburgerMenu({
                 `}
               >
                 <IconComponent
-                  className={`w-6 h-6 shrink-0 ${
-                    isActive
+                  className={`w-6 h-6 shrink-0 ${isActive
                       ? "text-white"
                       : currentTheme === "light"
                         ? "text-gray-600"
                         : colors.icon
-                  }`}
+                    }`}
                 />
                 {isSidebarOpen && (
                   <span className={isActive ? "text-white" : currentTheme === "light" ? "text-gray-700" : "text-gray-300"}>

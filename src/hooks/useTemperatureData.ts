@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "./useAuth";
-import { axiosInstance } from "../services/authService";
 
 export const useTemperatureData = () => {
   const { accessToken } = useAuth();
@@ -14,21 +13,9 @@ export const useTemperatureData = () => {
     if (!accessToken) return;
 
     try {
-      const baseUrl =
-        import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
-      const response = await axiosInstance.post(
-        `${baseUrl}/iot/temperature/request`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      if (response.data?.success && response.data?.temperature != null) {
-        setCurrentTemperature(response.data.temperature);
-      }
+      // Mock temperature data
+      const mockTemp = Math.floor(Math.random() * 10) + 20; // 20-30°C
+      setCurrentTemperature(mockTemp);
     } catch (error) {
     }
   }, [accessToken]);
@@ -37,17 +24,10 @@ export const useTemperatureData = () => {
     if (!accessToken) return;
 
     try {
-      const baseUrl =
-        import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
-      const response = await axiosInstance.get(
-        `${baseUrl}/iot/temperature/history`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
+      // Mock temperature history data
+      const data = Array.from({ length: 24 }, () =>
+        Math.floor(Math.random() * 10) + 20
       );
-      const data: number[] = response.data;
       setTemperatureHistory(data);
 
       // Actualizar temperatura actual con el último valor del historial si no tenemos una reciente

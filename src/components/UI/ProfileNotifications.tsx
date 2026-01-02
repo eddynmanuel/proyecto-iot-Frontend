@@ -23,26 +23,11 @@ export default function ProfileNotifications({
   const { user } = useAuth();
   const { colors, theme } = useThemeByTime();
   const displayUserName = user?.user?.username || userName || "Usuario";
-  const apiBase =
-    (import.meta as any)?.env?.VITE_API_BASE_URL ||
-    (import.meta as any)?.env?.VITE_API_URL ||
-    (import.meta as any)?.env?.VITE_BACKEND_URL ||
-    (typeof window !== "undefined"
-      ? localStorage.getItem("API_URL") || undefined
-      : undefined);
-  const token =
-    (user as any)?.access_token ||
-    (user as any)?.token ||
-    (user as any)?.jwt ||
-    (user as any)?.idToken ||
-    (typeof window !== "undefined"
-      ? localStorage.getItem("access_token") ||
-        localStorage.getItem("token") ||
-        undefined
-      : undefined);
+
+  // No need for apiBase or token since we're using mock data
   const { notifications, open, toggle, remove, clearAll } = useNotifications(
     initialNotifications,
-    { apiBase, token, limit: 50, offset: 0, userId: (user as any)?.user?.id }
+    { limit: 50, offset: 0 }
   );
 
   const [animateBell, setAnimateBell] = useState(false);
@@ -100,11 +85,10 @@ export default function ProfileNotifications({
       {/* Usuario */}
       <div className="flex items-center gap-2">
         <div
-          className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shadow-lg ${
-            theme === "light"
+          className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shadow-lg ${theme === "light"
               ? "bg-slate-300 text-slate-900"
               : "bg-slate-800 text-white"
-          }`}
+            }`}
         >
           {displayUserName.charAt(0).toUpperCase()}
         </div>
@@ -192,11 +176,9 @@ export default function ProfileNotifications({
                         initial={{ opacity: 0, y: -4 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -4 }}
-                        className={`group flex items-start justify-between gap-3 p-2 rounded-lg border ${
-                          colors.border
-                        } hover:shadow-lg transition ${
-                          colors.cardBg
-                        } ${typeBorder(n.type)} border-l-4`}
+                        className={`group flex items-start justify-between gap-3 p-2 rounded-lg border ${colors.border
+                          } hover:shadow-lg transition ${colors.cardBg
+                          } ${typeBorder(n.type)} border-l-4`}
                       >
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded-full flex items-center justify-center bg-slate-700/30">

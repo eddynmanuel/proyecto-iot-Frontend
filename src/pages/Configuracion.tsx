@@ -2,7 +2,6 @@
 
 import { Settings, Bell, Mic, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { axiosInstance } from "../services/authService";
 import SimpleCard from "../components/UI/Card";
 import Perfil from "../components/UI/Perfil";
 import Modal from "../components/UI/Modal";
@@ -11,7 +10,6 @@ import LocationSelector from "../components/UI/LocationSelector";
 import { useConfiguracion } from "../hooks/useConfiguration";
 import { useLocation } from "../hooks/useLocation";
 import { useThemeByTime } from "../hooks/useThemeByTime";
-import { useAuth } from "../hooks/useAuth";
 import { useCameraCapture } from "../hooks/useCameraCapture";
 import { MAX_FACE_PHOTOS } from "../utils/cameraConstants";
 
@@ -68,10 +66,23 @@ export default function Configuracion() {
   } = useConfiguracion();
 
   const { handleLocationChange } = useLocation();
-  const { user } = useAuth();
 
   const [capturedPhotos, setCapturedPhotos] = useState<Blob[]>([]);
   const [isUploadingFace, setIsUploadingFace] = useState(false);
+
+  // Estado para rutinas automáticas
+  const [routines, setRoutines] = useState({
+    buenosDias: true,
+    modoNoche: true,
+    salirDeCasa: false,
+  });
+
+  const toggleRoutine = (routineName: keyof typeof routines) => {
+    setRoutines((prev) => ({
+      ...prev,
+      [routineName]: !prev[routineName],
+    }));
+  };
 
   // Use camera capture hook for face recognition
   const { videoRef, capturePhoto } = useCameraCapture({
@@ -100,29 +111,17 @@ export default function Configuracion() {
   const handleUploadClientFaces = async () => {
     try {
       setIsUploadingFace(true);
-      const userId = (user as any)?.user?.id ?? (user as any)?.user?.user_id;
-      if (!userId) {
-        alert("No se pudo obtener tu ID de usuario.");
-        return;
-      }
       if (capturedPhotos.length === 0) {
         alert("Toma al menos una foto de tu rostro.");
         return;
       }
-      const fd = new FormData();
-      capturedPhotos.forEach((blob, idx) =>
-        fd.append("files", blob, `face_${idx}.jpg`)
-      );
-      await axiosInstance.post(`/rc/rc/users/${userId}/upload_faces`, fd, {
-        headers: { "Content-Type": undefined },
-      });
+      // Mock upload - just simulate delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       setChangeFaceModalOpen(false);
       setCapturedPhotos([]);
       setIsUploadingFace(false);
     } catch (e: any) {
-      const message =
-        e?.response?.data?.detail || e?.message || "Error al registrar rostro";
-      alert(message);
+      alert("Error al registrar rostro");
     } finally {
       setIsUploadingFace(false);
     }
@@ -160,22 +159,20 @@ export default function Configuracion() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setTheme("light")}
-              className={`p-2 rounded-lg transition-all ${
-                theme === "light"
-                  ? `bg-gradient-to-r ${colors.primary} text-white`
-                  : `${colors.cardBg} ${colors.text} border ${colors.border}`
-              }`}
+              className={`p-2 rounded-lg transition-all ${theme === "light"
+                ? `bg-gradient-to-r ${colors.primary} text-white`
+                : `${colors.cardBg} ${colors.text} border ${colors.border}`
+                }`}
               aria-label="Tema claro"
             >
               <Sun className="w-4 h-4" />
             </button>
             <button
               onClick={() => setTheme("dark")}
-              className={`p-2 rounded-lg transition-all ${
-                theme === "dark"
-                  ? `bg-gradient-to-r ${colors.primary} text-white`
-                  : `${colors.cardBg} ${colors.text} border ${colors.border}`
-              }`}
+              className={`p-2 rounded-lg transition-all ${theme === "dark"
+                ? `bg-gradient-to-r ${colors.primary} text-white`
+                : `${colors.cardBg} ${colors.text} border ${colors.border}`
+                }`}
               aria-label="Tema oscuro"
             >
               <Moon className="w-4 h-4" />
@@ -205,31 +202,150 @@ export default function Configuracion() {
         </SimpleCard>
 
         {/* Preferencias */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Notificaciones */}
-          <SimpleCard
-            className={`p-4 flex items-center justify-between ${colors.cardBg}`}
-          >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Columna izquierda: Notificaciones y Ubicación */}
+          <div className="space-y-4">
+            {/* Notificaciones */}
+            <SimpleCard
+              className={`p-4 flex items-center justify-between ${colors.cardBg}`}
+            >
+              <div>
+                <div
+                  className={`${colors.text} flex items-center gap-2 font-medium text-sm`}
+                >
+                  <Bell className="w-4 h-4" /> Notificaciones
+                </div>
+                <div className={`text-xs ${colors.mutedText}`}>
+                  Activar o desactivar alertas
+                </div>
+              </div>
+              <button
+                onClick={() => setNotifications(!notifications)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${notifications ? 'bg-blue-600' : 'bg-slate-600'
+                  }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${notifications ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                />
+              </button>
+            </SimpleCard>
+
+            {/* Ubicación */}
+            <LocationSelector onLocationChange={handleLocationChange} />
+          </div>
+
+          {/* Columna derecha: Rutinas Automáticas */}
+          <SimpleCard className="p-4">
             <div>
               <div
-                className={`${colors.text} flex items-center gap-2 font-medium text-sm`}
+                className={`${colors.text} flex items-center gap-2 font-medium text-sm mb-2`}
               >
-                <Bell className="w-4 h-4" /> Notificaciones
+                <Settings className="w-4 h-4" /> Rutinas Automáticas
               </div>
-              <div className={`text-xs ${colors.mutedText}`}>
-                Activar o desactivar alertas
+              <div className={`text-xs ${colors.mutedText} mb-3`}>
+                Configura rutinas para automatizar tu hogar
               </div>
-            </div>
-            <input
-              type="checkbox"
-              checked={notifications}
-              onChange={() => setNotifications(!notifications)}
-              className="w-5 h-5 accent-blue-500"
-            />
-          </SimpleCard>
 
-          {/* Ubicación */}
-          <LocationSelector onLocationChange={handleLocationChange} />
+              <div className="space-y-2">
+                {/* Rutina 1: Buenos días */}
+                <div
+                  className={`p-2.5 rounded-lg border ${colors.border} ${colors.cardBg}`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div>
+                      <div className={`text-sm font-medium ${colors.text}`}>
+                        Buenos días
+                      </div>
+                      <div className={`text-xs ${colors.mutedText}`}>
+                        Lun-Vie 7:00 AM
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => toggleRoutine('buenosDias')}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${routines.buenosDias ? 'bg-blue-600' : 'bg-slate-600'
+                        }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${routines.buenosDias ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                      />
+                    </button>
+                  </div>
+                  <div className={`text-xs ${colors.mutedText}`}>
+                    Enciende luces, ajusta temperatura
+                  </div>
+                </div>
+
+                {/* Rutina 2: Modo noche */}
+                <div
+                  className={`p-2.5 rounded-lg border ${colors.border} ${colors.cardBg}`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div>
+                      <div className={`text-sm font-medium ${colors.text}`}>
+                        Modo noche
+                      </div>
+                      <div className={`text-xs ${colors.mutedText}`}>
+                        Diario 10:00 PM
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => toggleRoutine('modoNoche')}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${routines.modoNoche ? 'bg-blue-600' : 'bg-slate-600'
+                        }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${routines.modoNoche ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                      />
+                    </button>
+                  </div>
+                  <div className={`text-xs ${colors.mutedText}`}>
+                    Apaga luces, activa seguridad
+                  </div>
+                </div>
+
+                {/* Rutina 3: Salir de casa */}
+                <div
+                  className={`p-2.5 rounded-lg border ${colors.border} ${colors.cardBg}`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div>
+                      <div className={`text-sm font-medium ${colors.text}`}>
+                        Salir de casa
+                      </div>
+                      <div className={`text-xs ${colors.mutedText}`}>
+                        Manual
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => toggleRoutine('salirDeCasa')}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${routines.salirDeCasa ? 'bg-blue-600' : 'bg-slate-600'
+                        }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${routines.salirDeCasa ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                      />
+                    </button>
+                  </div>
+                  <div className={`text-xs ${colors.mutedText}`}>
+                    Apaga todo, activa alarma
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('navigate', { detail: { menu: 'Rutinas' } }));
+                }}
+                className={`w-full mt-3 px-4 py-2 rounded-lg text-sm border ${colors.border} ${colors.text} hover:bg-slate-700/30 transition-colors`}
+              >
+                Ver todas las rutinas
+              </button>
+            </div>
+          </SimpleCard>
         </div>
 
         {/* Modal editar perfil */}
@@ -353,11 +469,10 @@ export default function Configuracion() {
 
             <button
               onClick={handleChangeVoice}
-              className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white transition-all w-full md:w-auto ${
-                isListening
-                  ? "bg-red-600 animate-pulse cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }`}
+              className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white transition-all w-full md:w-auto ${isListening
+                ? "bg-red-600 animate-pulse cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+                }`}
               disabled={isListening || !voicePasswordVerified}
             >
               <Mic className="w-4 h-4" />
@@ -541,14 +656,12 @@ export default function Configuracion() {
                         isAdmin: !newMember.isAdmin,
                       })
                     }
-                    className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${
-                      newMember.isAdmin ? "bg-blue-600" : "bg-slate-600"
-                    }`}
+                    className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${newMember.isAdmin ? "bg-blue-600" : "bg-slate-600"
+                      }`}
                   >
                     <span
-                      className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
-                        newMember.isAdmin ? "translate-x-7" : "translate-x-1"
-                      }`}
+                      className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${newMember.isAdmin ? "translate-x-7" : "translate-x-1"
+                        }`}
                     />
                   </button>
                 </div>
@@ -561,11 +674,10 @@ export default function Configuracion() {
                   <button
                     onClick={handleFinalizeMember}
                     disabled={isRegisteringMember}
-                    className={`px-4 py-2 rounded-lg text-sm w-full md:w-auto transition-all ${
-                      isRegisteringMember
-                        ? `${colors.buttonInactive} cursor-not-allowed`
-                        : "bg-blue-600 hover:bg-blue-700 text-white"
-                    }`}
+                    className={`px-4 py-2 rounded-lg text-sm w-full md:w-auto transition-all ${isRegisteringMember
+                      ? `${colors.buttonInactive} cursor-not-allowed`
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      }`}
                   >
                     {isRegisteringMember
                       ? "Registrando..."

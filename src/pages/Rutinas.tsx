@@ -76,7 +76,7 @@ export default function Rutinas() {
     isOpen: false,
     title: "",
     message: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
     variant: "danger",
   });
 
@@ -105,20 +105,20 @@ export default function Rutinas() {
         routine.trigger.type === "NLP"
           ? "NLP"
           : routine.trigger.type === "Tiempo"
-          ? "Tiempo"
-          : "Evento",
-      nlpPhrase: routine.trigger.type === "NLP" ? routine.trigger.phrase : "",
+            ? "Tiempo"
+            : "Evento",
+      nlpPhrase: routine.trigger.type === "NLP" && routine.trigger.phrase ? routine.trigger.phrase : "",
       timeHour:
-        routine.trigger.type === "Tiempo" ? routine.trigger.hour : "08:00",
-      timeDays: routine.trigger.type === "Tiempo" ? routine.trigger.days : [],
+        routine.trigger.type === "Tiempo" && routine.trigger.hour ? routine.trigger.hour : "08:00",
+      timeDays: routine.trigger.type === "Tiempo" && routine.trigger.days ? routine.trigger.days : [],
       timeDate:
         routine.trigger.type === "Tiempo"
           ? (routine.trigger as any).date || ""
           : "",
       deviceId:
-        routine.trigger.type === "Evento" ? routine.trigger.deviceId : "",
+        routine.trigger.type === "Evento" && routine.trigger.deviceId ? routine.trigger.deviceId : "",
       deviceEvent:
-        routine.trigger.type === "Evento" ? routine.trigger.event : "",
+        routine.trigger.type === "Evento" && routine.trigger.event ? routine.trigger.event : "",
       // Separar acciones IoT de mensajes TTS
       // Buscar IDs de comandos IoT comparando nombres con availableActions
       // Las acciones TTS empiezan con "tts_speak:"
@@ -220,7 +220,7 @@ export default function Rutinas() {
 
   return (
     <div
-      className={`p-2 md:p-4 pt-8 md:pt-3 space-y-6 font-inter ${colors.background} ${colors.text} min-h-screen`}
+      className={`p-2 md:p-4 pt-8 md:pt-3 pb-2 space-y-4 font-inter ${colors.background} ${colors.text} min-h-screen`}
     >
       <PageHeader
         title="Rutinas"
@@ -232,11 +232,10 @@ export default function Rutinas() {
         <div className="flex gap-3">
           <button
             onClick={() => setActiveSection("rutinas")}
-            className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${
-              activeSection === "rutinas"
-                ? `bg-gradient-to-r ${colors.primary} text-white shadow-lg`
-                : `${colors.cardBg} ${colors.text} border ${colors.cardHover}`
-            }`}
+            className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${activeSection === "rutinas"
+              ? `bg-gradient-to-r ${colors.primary} text-white shadow-lg`
+              : `${colors.cardBg} ${colors.text} border ${colors.cardHover}`
+              }`}
           >
             <ListTodo className="w-4 h-4" />
             Rutinas
@@ -248,11 +247,10 @@ export default function Rutinas() {
                 generateSuggestions();
               }
             }}
-            className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${
-              activeSection === "sugerencias"
-                ? `bg-gradient-to-r ${colors.primary} text-white shadow-lg`
-                : `${colors.cardBg} ${colors.text} border ${colors.cardHover}`
-            }`}
+            className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${activeSection === "sugerencias"
+              ? `bg-gradient-to-r ${colors.primary} text-white shadow-lg`
+              : `${colors.cardBg} ${colors.text} border ${colors.cardHover}`
+              }`}
           >
             <Wand2 className="w-4 h-4" />
             Sugerencias
@@ -275,11 +273,10 @@ export default function Rutinas() {
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
-                  filterStatus === status
-                    ? `bg-gradient-to-r ${colors.primary} text-white`
-                    : `${colors.chipBg} ${colors.chipText} border ${colors.cardHover}`
-                }`}
+                className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${filterStatus === status
+                  ? `bg-gradient-to-r ${colors.primary} text-white`
+                  : `${colors.chipBg} ${colors.chipText} border ${colors.cardHover}`
+                  }`}
               >
                 {status === "todos" && "Todos"}
                 {status === "confirmadas" && (
@@ -337,11 +334,10 @@ export default function Rutinas() {
                         )}
                       </div>
                       <div
-                        className={`px-2 py-1 rounded-lg text-xs font-semibold whitespace-nowrap ${
-                          rutina.confirmed
-                            ? colors.successChip
-                            : colors.warningChip
-                        }`}
+                        className={`px-2 py-1 rounded-lg text-xs font-semibold whitespace-nowrap ${rutina.confirmed
+                          ? colors.successChip
+                          : colors.warningChip
+                          }`}
                       >
                         {rutina.confirmed ? "Confirmada" : "Pendiente"}
                       </div>
@@ -437,11 +433,10 @@ export default function Rutinas() {
 
                     <button
                       onClick={() => toggleEnabled(rutina.id)}
-                      className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1 ${
-                        rutina.enabled
-                          ? `bg-gradient-to-r ${colors.primary} text-white`
-                          : `${colors.chipBg} hover:bg-slate-700/60`
-                      }`}
+                      className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1 ${rutina.enabled
+                        ? `bg-gradient-to-r ${colors.primary} text-white`
+                        : `${colors.chipBg} hover:bg-slate-700/60`
+                        }`}
                     >
                       <Eye className="w-4 h-4" />
                       <span className="hidden sm:inline">
@@ -507,13 +502,12 @@ export default function Rutinas() {
 
                     <div className="mt-3 w-full h-2 bg-slate-700 rounded-full overflow-hidden">
                       <div
-                        className={`h-full ${
-                          suggestion.confidence >= 0.7
-                            ? "bg-green-500"
-                            : suggestion.confidence >= 0.5
+                        className={`h-full ${suggestion.confidence >= 0.7
+                          ? "bg-green-500"
+                          : suggestion.confidence >= 0.5
                             ? "bg-yellow-500"
                             : "bg-red-500"
-                        }`}
+                          }`}
                         style={{
                           width: `${suggestion.confidence * 100}%`,
                         }}
@@ -616,11 +610,10 @@ export default function Rutinas() {
               onClick={() =>
                 setFormData({ ...formData, enabled: !formData.enabled })
               }
-              className={`w-full py-2 px-4 rounded-lg font-semibold transition-all ${
-                formData.enabled
-                  ? `bg-gradient-to-r ${colors.primary} text-white`
-                  : `${colors.chipBg} ${colors.chipText} hover:bg-slate-700/60`
-              }`}
+              className={`w-full py-2 px-4 rounded-lg font-semibold transition-all ${formData.enabled
+                ? `bg-gradient-to-r ${colors.primary} text-white`
+                : `${colors.chipBg} ${colors.chipText} hover:bg-slate-700/60`
+                }`}
             >
               {formData.enabled ? "Habilitada" : "Deshabilitada"}
             </button>
@@ -701,11 +694,10 @@ export default function Rutinas() {
                           onClick={() =>
                             setFormData({ ...formData, relativeMinutes: 0 })
                           }
-                          className={`py-2 px-3 rounded-lg text-sm font-semibold transition-all ${
-                            !useRelativeTime
-                              ? `bg-gradient-to-r ${colors.primary} text-white`
-                              : `${colors.chipBg} ${colors.chipText}`
-                          }`}
+                          className={`py-2 px-3 rounded-lg text-sm font-semibold transition-all ${!useRelativeTime
+                            ? `bg-gradient-to-r ${colors.primary} text-white`
+                            : `${colors.chipBg} ${colors.chipText}`
+                            }`}
                         >
                           Hora específica
                         </button>
@@ -718,11 +710,10 @@ export default function Rutinas() {
                               timeHour: "",
                             })
                           }
-                          className={`py-2 px-3 rounded-lg text-sm font-semibold transition-all ${
-                            useRelativeTime
-                              ? `bg-gradient-to-r ${colors.primary} text-white`
-                              : `${colors.chipBg} ${colors.chipText}`
-                          }`}
+                          className={`py-2 px-3 rounded-lg text-sm font-semibold transition-all ${useRelativeTime
+                            ? `bg-gradient-to-r ${colors.primary} text-white`
+                            : `${colors.chipBg} ${colors.chipText}`
+                            }`}
                         >
                           En X minutos
                         </button>
@@ -748,11 +739,10 @@ export default function Rutinas() {
                                   relativeMinutes: mins,
                                 })
                               }
-                              className={`py-2 px-2 rounded-lg text-sm font-semibold transition-all ${
-                                formData.relativeMinutes === mins
-                                  ? `bg-gradient-to-r ${colors.primary} text-white`
-                                  : `${colors.chipBg} ${colors.chipText}`
-                              }`}
+                              className={`py-2 px-2 rounded-lg text-sm font-semibold transition-all ${formData.relativeMinutes === mins
+                                ? `bg-gradient-to-r ${colors.primary} text-white`
+                                : `${colors.chipBg} ${colors.chipText}`
+                                }`}
                             >
                               {mins} min
                             </button>
@@ -821,20 +811,19 @@ export default function Rutinas() {
                         Días
                       </label>
                       <div className="grid grid-cols-4 gap-2">
-                        {DAY_LABELS.map((day) => {
+                        {Object.keys(DAY_LABELS).map((day) => {
                           const isSelected = formData.timeDays.includes(day);
                           return (
                             <button
                               key={day}
                               type="button"
                               onClick={() => handleToggleDay(day)}
-                              className={`py-2 px-2 rounded-lg text-xs font-semibold transition-all ${
-                                isSelected
-                                  ? `bg-gradient-to-r ${colors.primary} text-white`
-                                  : `${colors.chipBg} ${colors.chipText}`
-                              }`}
+                              className={`py-2 px-2 rounded-lg text-xs font-semibold transition-all ${isSelected
+                                ? `bg-gradient-to-r ${colors.primary} text-white`
+                                : `${colors.chipBg} ${colors.chipText}`
+                                }`}
                             >
-                              {day.slice(0, 3)}
+                              {DAY_LABELS[day]}
                             </button>
                           );
                         })}
@@ -988,22 +977,20 @@ export default function Rutinas() {
                       key={action.id}
                       type="button"
                       onClick={() => handleToggleAction(action.id)}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg font-medium transition-all border ${
-                        formData.actionIds.includes(action.id)
-                          ? `bg-gradient-to-r ${colors.primary} text-white border-transparent shadow-lg`
-                          : `${colors.cardBg} ${colors.text} border-slate-700/50 hover:border-slate-600/80 hover:bg-slate-800/40`
-                      }`}
+                      className={`w-full flex items-center justify-between p-3 rounded-lg font-medium transition-all border ${formData.actionIds.includes(action.id)
+                        ? `bg-gradient-to-r ${colors.primary} text-white border-transparent shadow-lg`
+                        : `${colors.cardBg} ${colors.text} border-slate-700/50 hover:border-slate-600/80 hover:bg-slate-800/40`
+                        }`}
                     >
                       <span className="text-sm flex items-center gap-2">
                         <Wifi className="w-4 h-4" />
                         {action.name}
                       </span>
                       <div
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                          formData.actionIds.includes(action.id)
-                            ? "border-white bg-white/20"
-                            : "border-slate-500"
-                        }`}
+                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${formData.actionIds.includes(action.id)
+                          ? "border-white bg-white/20"
+                          : "border-slate-500"
+                          }`}
                       >
                         {formData.actionIds.includes(action.id) && (
                           <CheckCircle className="w-4 h-4 text-white" />
@@ -1084,8 +1071,8 @@ export default function Rutinas() {
               {isSavingForm
                 ? "Guardando..."
                 : editingId
-                ? "Actualizar"
-                : "Crear Rutina"}
+                  ? "Actualizar"
+                  : "Crear Rutina"}
             </SimpleButton>
           </div>
         </div>

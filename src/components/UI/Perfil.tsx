@@ -3,7 +3,6 @@ import { User, Trash2, Edit, Power, UserPlus } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useThemeByTime } from "../../hooks/useThemeByTime";
 import Modal from "../UI/Modal";
-import { axiosInstance } from "../../services/authService";
 
 export interface FamilyMember {
   id: string;
@@ -60,65 +59,21 @@ export default function Perfil({
 
   const confirmDelete = async () => {
     if (!memberToDelete) return;
-    try {
-      await axiosInstance.delete("/auth/auth/delete-user", {
-        data: { username: memberToDelete.name },
-      });
-      setMembers(members.filter((m) => m.id !== memberToDelete.id));
-      setMemberToDelete(null);
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event("refreshMembers"));
-      }
-    } catch (e: any) {
-      const message =
-        e?.response?.data?.detail || e?.message || "Error al eliminar usuario";
-      alert(message);
-    }
+    // Remove locally without backend call
+    setMembers(members.filter((m) => m.id !== memberToDelete.id));
+    setMemberToDelete(null);
   };
 
   const handleSaveEdit = async () => {
     if (!editingMember) return;
-    try {
-      const original = members.find((m) => m.id === editingMember.id);
-      const usernameForApi = original?.name || editingMember.name;
-      const proposedName = (editingMember.name || "").trim();
-      const originalNameTrim = (original?.name || "").trim();
-      const newUsernamePayload =
-        proposedName && proposedName !== originalNameTrim
-          ? proposedName
-          : undefined;
-      await axiosInstance.post("/auth/auth/update-member-role", {
-        username: usernameForApi,
-        make_owner: editingMember.role === "Administrador",
-        new_password: editPassword.trim() || undefined,
-        new_username: newUsernamePayload,
-      });
-      const updatedMembers =
-        editingMember.role === "Administrador"
-          ? members.filter((m) => m.id !== editingMember.id)
-          : members.map((m) => (m.id === editingMember.id ? editingMember : m));
-      setMembers(updatedMembers);
-      setEditingMember(null);
-      setEditPassword("");
-      // Solicitar refresco según rol final
-      if (typeof window !== "undefined") {
-        const demotedOwner =
-          editingMember.role !== "Administrador" &&
-          editingMember.id.startsWith("owner:");
-        if (demotedOwner) {
-          window.dispatchEvent(new Event("refreshOwners"));
-          window.dispatchEvent(new Event("refreshMembers"));
-        } else if (editingMember.role === "Administrador") {
-          window.dispatchEvent(new Event("refreshOwners"));
-        } else {
-          window.dispatchEvent(new Event("refreshMembers"));
-        }
-      }
-    } catch (e: any) {
-      const message =
-        e?.response?.data?.detail || e?.message || "Error al guardar cambios";
-      alert(message);
-    }
+    // Update locally without backend call
+    const updatedMembers =
+      editingMember.role === "Administrador"
+        ? members.filter((m) => m.id !== editingMember.id)
+        : members.map((m) => (m.id === editingMember.id ? editingMember : m));
+    setMembers(updatedMembers);
+    setEditingMember(null);
+    setEditPassword("");
   };
 
   const handleRoleChange = () => {
@@ -338,18 +293,16 @@ export default function Perfil({
                   </div>
                   <button
                     onClick={handleRoleChange}
-                    className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${
-                      editingMember.role === "Administrador"
+                    className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${editingMember.role === "Administrador"
                         ? "bg-blue-600"
                         : "bg-red-600"
-                    }`}
+                      }`}
                   >
                     <span
-                      className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
-                        editingMember.role === "Administrador"
+                      className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${editingMember.role === "Administrador"
                           ? "translate-x-7"
                           : "translate-x-1"
-                      }`}
+                        }`}
                     />
                   </button>
                 </div>

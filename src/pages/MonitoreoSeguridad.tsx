@@ -17,7 +17,6 @@ import { useThemeByTime } from "../hooks/useThemeByTime";
 import { useSecurityCameras } from "../hooks/useSecurityCameras";
 import { useCameraStream } from "../hooks/useCameraStream";
 import { Wifi, WifiOff } from "lucide-react";
-import { axiosInstance } from "../services/authService";
 
 // --- Door Control Modal Component ---
 interface DoorControlModalProps {
@@ -176,11 +175,10 @@ function CameraStreamView({
           <button
             onClick={onRecognize}
             disabled={isRecognizing}
-            className={`px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-all duration-200 ${
-              isRecognizing
+            className={`px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-all duration-200 ${isRecognizing
                 ? "bg-cyan-500/50 text-cyan-100 cursor-not-allowed"
                 : "bg-cyan-500 text-white hover:bg-cyan-600 shadow-lg hover:shadow-cyan-500/50"
-            }`}
+              }`}
           >
             {isRecognizing ? (
               <>
@@ -213,17 +211,16 @@ function CameraStreamView({
           className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20"
         >
           <div
-            className={`px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 ${
-              recognitionResult.success &&
-              recognitionResult.recognized_users &&
-              recognitionResult.recognized_users.length > 0
+            className={`px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 ${recognitionResult.success &&
+                recognitionResult.recognized_users &&
+                recognitionResult.recognized_users.length > 0
                 ? "bg-green-500/90 text-white"
                 : "bg-red-500/90 text-white"
-            }`}
+              }`}
           >
             {recognitionResult.success &&
-            recognitionResult.recognized_users &&
-            recognitionResult.recognized_users.length > 0 ? (
+              recognitionResult.recognized_users &&
+              recognitionResult.recognized_users.length > 0 ? (
               <>
                 <CheckCircle className="w-4 h-4" />
                 ¡Bienvenido, {recognitionResult.recognized_users.join(", ")}!
@@ -264,40 +261,21 @@ export default function MonitoreoSeguridad() {
   }>({});
 
   // Door Control State
-  const [mainDoorId, setMainDoorId] = useState<number | null>(null);
+  const [mainDoorId] = useState<number | null>(1); // Mock door ID
   const [showDoorModal, setShowDoorModal] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", message: "" });
   const [isOpeningDoor, setIsOpeningDoor] = useState(false);
-
-  // Fetch Main Door ID
-  useEffect(() => {
-    const fetchDoorId = async () => {
-      try {
-        const response = await axiosInstance.get("/iot/device_states");
-        const door = response.data.find(
-          (d: any) => d.device_name === "DOOR_PRINCIPAL"
-        );
-        if (door) {
-          setMainDoorId(door.id);
-        }
-      } catch (error) {
-      }
-    };
-    fetchDoorId();
-  }, []);
 
   const handleOpenDoor = async () => {
     if (!mainDoorId) return;
     setIsOpeningDoor(true);
     try {
-      await axiosInstance.put(`/iot/device_states/${mainDoorId}`, {
-        new_state: { status: "OPEN" },
-      });
-      // Close modal immediately or show success feedback?
-      // Let's close modal and maybe show a toast or rely on camera feed observing the door
+      // Mock door opening - just simulate delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log("Door opened");
       setShowDoorModal(false);
     } catch (error) {
-      // Could show error state in modal
+      console.error("Error opening door:", error);
     } finally {
       setIsOpeningDoor(false);
     }
@@ -319,27 +297,32 @@ export default function MonitoreoSeguridad() {
     }));
 
     try {
-      // Use axiosInstance which handles token refresh automatically
-      const response = await axiosInstance.post(
-        `/cameras/${cameraId}/snapshot-recognize`
-      );
+      // Mock recognition - simulate delay and random result
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      const result = response.data;
+      const mockResult = Math.random() > 0.5 ? {
+        success: true,
+        recognized_users: ["Usuario Demo"],
+        message: "Reconocimiento exitoso"
+      } : {
+        success: false,
+        message: "No se reconoció a nadie"
+      };
 
       setRecognitionState((prev) => ({
         ...prev,
-        [cameraId]: { isRecognizing: false, result },
+        [cameraId]: { isRecognizing: false, result: mockResult },
       }));
 
       // If recognition successful and users found, prompt to open door
       if (
-        result.success &&
-        result.recognized_users &&
-        result.recognized_users.length > 0
+        mockResult.success &&
+        mockResult.recognized_users &&
+        mockResult.recognized_users.length > 0
       ) {
         setModalContent({
           title: "Usuario Reconocido",
-          message: `Se ha reconocido a ${result.recognized_users.join(
+          message: `Se ha reconocido a ${mockResult.recognized_users.join(
             ", "
           )}. ¿Deseas abrir la puerta principal?`,
         });
@@ -411,28 +394,25 @@ export default function MonitoreoSeguridad() {
             </div>
 
             <SimpleCard
-              className={`p-4 sm:p-5 md:p-6 mb-6 md:mb-8 border transition-all ${
-                systemOn
+              className={`p-4 sm:p-5 md:p-6 mb-6 md:mb-8 border transition-all ${systemOn
                   ? `bg-gradient-to-r ${colors.cyanGradient} ${colors.humidityShadow}`
                   : `${colors.cardBg} ${colors.border}`
-              }`}
+                }`}
             >
               {/* ... Status Card Content ... */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div className="flex items-center gap-3">
                   <Power
-                    className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 ${
-                      systemOn ? colors.cyanIcon : colors.mutedText
-                    }`}
+                    className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 ${systemOn ? colors.cyanIcon : colors.mutedText
+                      }`}
                   />
                   <div>
                     <p className={`text-xs sm:text-sm ${colors.mutedText}`}>
                       Estado del Sistema
                     </p>
                     <p
-                      className={`text-sm sm:text-base md:text-lg font-bold ${
-                        systemOn ? colors.greenText : colors.mutedText
-                      }`}
+                      className={`text-sm sm:text-base md:text-lg font-bold ${systemOn ? colors.greenText : colors.mutedText
+                        }`}
                     >
                       {systemOn
                         ? `${activeCameras}/${camerasList.length} Cámaras Activas`
@@ -442,9 +422,8 @@ export default function MonitoreoSeguridad() {
                 </div>
                 <button
                   onClick={() => setSystemOn(!systemOn)}
-                  className={`p-2 sm:p-2.5 md:p-3 rounded-lg shadow-lg transition-all duration-200 flex items-center justify-center ${
-                    systemOn ? colors.successChip : colors.dangerChip
-                  }`}
+                  className={`p-2 sm:p-2.5 md:p-3 rounded-lg shadow-lg transition-all duration-200 flex items-center justify-center ${systemOn ? colors.successChip : colors.dangerChip
+                    }`}
                   aria-label={systemOn ? "Apagar sistema" : "Encender sistema"}
                 >
                   <Power className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5" />
@@ -459,24 +438,21 @@ export default function MonitoreoSeguridad() {
                 return (
                   <SimpleCard
                     key={camera.id}
-                    className={`overflow-hidden border transition-all ${
-                      isActive
+                    className={`overflow-hidden border transition-all ${isActive
                         ? `bg-gradient-to-br ${colors.cyanGradient} shadow-lg shadow-cyan-500/20`
                         : `${colors.cardBg} ${colors.border}`
-                    }`}
+                      }`}
                   >
                     <div className="flex flex-col h-full">
                       <div className="p-3 sm:p-4 md:p-5 flex items-center justify-between border-b border-slate-700/30">
                         <div className="flex items-center gap-2 sm:gap-3">
                           <div
-                            className={`p-1.5 sm:p-2 rounded-lg ${
-                              isActive ? "bg-green-500/20" : "bg-slate-700/30"
-                            }`}
+                            className={`p-1.5 sm:p-2 rounded-lg ${isActive ? "bg-green-500/20" : "bg-slate-700/30"
+                              }`}
                           >
                             <Camera
-                              className={`w-4 sm:w-5 ${
-                                isActive ? "text-green-400" : colors.mutedText
-                              }`}
+                              className={`w-4 sm:w-5 ${isActive ? "text-green-400" : colors.mutedText
+                                }`}
                             />
                           </div>
                           <div>
@@ -507,14 +483,12 @@ export default function MonitoreoSeguridad() {
                         <button
                           onClick={() => toggleCamera(camera.id)}
                           disabled={!systemOn}
-                          className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 flex items-center justify-center ${
-                            isActive
+                          className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 flex items-center justify-center ${isActive
                               ? "bg-green-500/30 text-green-400 hover:bg-green-500/40"
                               : "bg-slate-700/30 text-slate-500 hover:bg-slate-700/50"
-                          } disabled:opacity-50 disabled:cursor-not-allowed`}
-                          aria-label={`${camera.label}: ${
-                            cameraStates[camera.id] ? "desactivar" : "activar"
-                          }`}
+                            } disabled:opacity-50 disabled:cursor-not-allowed`}
+                          aria-label={`${camera.label}: ${cameraStates[camera.id] ? "desactivar" : "activar"
+                            }`}
                         >
                           <Power className="w-4 sm:w-5" />
                         </button>
@@ -522,11 +496,10 @@ export default function MonitoreoSeguridad() {
 
                       <div className="relative w-full h-48 sm:h-64 md:h-[28rem] bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center overflow-hidden">
                         <div
-                          className={`absolute top-3 right-3 w-3 h-3 rounded-full ${
-                            isActive
+                          className={`absolute top-3 right-3 w-3 h-3 rounded-full ${isActive
                               ? "bg-green-500 animate-pulse"
                               : "bg-red-500"
-                          } shadow-lg`}
+                            } shadow-lg`}
                         />
 
                         <CameraStreamView
@@ -546,9 +519,8 @@ export default function MonitoreoSeguridad() {
 
                       <div className="p-2 sm:p-3 md:p-4 bg-slate-900/50 border-t border-slate-700/30 flex items-center gap-2 sm:gap-3">
                         <div
-                          className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${
-                            isActive ? "bg-green-500" : "bg-slate-500"
-                          }`}
+                          className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-slate-500"
+                            }`}
                         />
                         <Camera className="w-3 sm:w-4 h-3 sm:h-4 text-slate-400" />
                         <span
