@@ -32,7 +32,7 @@ export function useWeatherData() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchWeather = useCallback(
-    async (latitude: number, longitude: number) => {
+    async (_latitude: number, _longitude: number) => {
       try {
         setLoading(true);
         setError(null);

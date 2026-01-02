@@ -36,28 +36,28 @@ export function clearNotifications() {
 }
 
 export async function fetchNotifications(
-  apiBase?: string,
-  token?: string,
-  params?: { limit?: number; offset?: number; status?: string }
+  _apiBase?: string,
+  _token?: string,
+  _params?: { limit?: number; offset?: number; status?: string }
 ): Promise<Notification[]> {
   // Return mock notifications instead of fetching from backend
   return Promise.resolve(mockNotifications);
 }
 
 export async function deleteNotification(
-  id: number,
-  apiBase?: string,
-  token?: string
+  _id: number,
+  _apiBase?: string,
+  _token?: string
 ): Promise<boolean> {
   // Mock delete - always succeeds
   return Promise.resolve(true);
 }
 
 export async function updateNotificationStatus(
-  id: number,
-  status: string,
-  apiBase?: string,
-  token?: string
+  _id: number,
+  _status: string,
+  _apiBase?: string,
+  _token?: string
 ): Promise<boolean> {
   // Mock update - always succeeds
   return Promise.resolve(true);

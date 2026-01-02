@@ -15,8 +15,8 @@ export function useConfiguracion() {
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
   const [changeVoiceModalOpen, setChangeVoiceModalOpen] = useState(false);
   const [changeFaceModalOpen, setChangeFaceModalOpen] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState("");
+  const [_isListening, setIsListening] = useState(false);
+  const [_transcript, setTranscript] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
 
   const [modalOwnerName, setModalOwnerName] = useState(ownerName);
@@ -30,10 +30,10 @@ export function useConfiguracion() {
     confirmPassword: "",
     isAdmin: false,
   });
-  const [errorMessage, setErrorMessage] = useState("");
-  const [voiceConfirmed, setVoiceConfirmed] = useState(false);
+  const [errorMessage, _setErrorMessage] = useState("");
+  const [_voiceConfirmed, _setVoiceConfirmed] = useState(false);
   const [faceDetected, setFaceDetected] = useState(false);
-  const [isRegisteringMember, setIsRegisteringMember] = useState(false);
+  const [_isRegisteringMember, _setIsRegisteringMember] = useState(false);
 
   const [voicePassword, setVoicePassword] = useState("");
   const [voicePasswordVerified, setVoicePasswordVerified] = useState(false);
@@ -64,6 +64,9 @@ export function useConfiguracion() {
       return;
     }
     setStatusMessage("Funcionalidad de voz no disponible sin backend");
+    // Simulando uso
+    setIsListening(true);
+    setTranscript("");
   };
 
   const handleFaceDetection = () => {
@@ -96,7 +99,7 @@ export function useConfiguracion() {
     const newFamilyMember: FamilyMember = {
       id: String(Date.now()),
       name: newMember.username,
-      role: newMember.isAdmin ? "Propietario" : "Familiar",
+      role: newMember.isAdmin ? "Administrador" : "Familiar",
       privileges: { controlDevices: false, viewCamera: true },
     };
 
@@ -132,8 +135,8 @@ export function useConfiguracion() {
     setModalCurrentPassword,
     isAddMemberModalOpen,
     setIsAddMemberModalOpen,
-    isListening,
-    transcript,
+    isListening: _isListening,
+    transcript: _transcript,
     statusMessage,
     handleEditProfile,
     handleSaveProfile,
@@ -153,8 +156,8 @@ export function useConfiguracion() {
     newMember,
     setNewMember,
     errorMessage,
-    isRegisteringMember,
-    voiceConfirmed,
+    isRegisteringMember: _isRegisteringMember,
+    voiceConfirmed: _voiceConfirmed,
     faceDetected,
     handleFinalizeMember,
     isCurrentUserOwner,

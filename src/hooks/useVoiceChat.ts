@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
 // Stub hook - no backend functionality
-export function useVoiceChat() {
+export function useVoiceChat(_options?: any) {
   const [messages] = useState<Array<{ sender: string; text: string }>>([]);
   const [text, setText] = useState("");
   const [listening] = useState(false);

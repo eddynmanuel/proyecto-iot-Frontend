@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     checkAuth();
   }, [checkAuth]);
 
-  const login = useCallback(async (username: string, password: string) => {
+  const login = useCallback(async (username: string, _password: string) => {
     try {
       // Autenticación local simple - acepta cualquier usuario/contraseña
       // En producción, aquí podrías validar contra usuarios predefinidos

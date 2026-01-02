@@ -22,7 +22,7 @@ export function useTimeData() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTime = useCallback(async (latitude: number, longitude: number) => {
+  const fetchTime = useCallback(async (_latitude: number, _longitude: number) => {
     try {
       setLoading(true);
       setError(null);

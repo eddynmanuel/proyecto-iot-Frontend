@@ -11,7 +11,7 @@ export const useEnergyData = () => {
       setLoading(true);
       try {
         // Mock energy data
-        const mockData = Array.from({ length: 24 }, (_, i) =>
+        const mockData = Array.from({ length: 24 }, (_, _i) =>
           Math.floor(Math.random() * 500) + 200
         );
         setEnergyHistory(mockData);

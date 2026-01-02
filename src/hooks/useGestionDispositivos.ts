@@ -50,7 +50,7 @@ export function useGestionDispositivos() {
   const loadEnergyData = async () => {
     try {
       // Mock energy history data
-      const mockHistory = Array.from({ length: 24 }, (_, i) =>
+      const mockHistory = Array.from({ length: 24 }, (_, _i) =>
         Math.floor(Math.random() * 500) + 200
       );
       setEnergyHistory(mockHistory);

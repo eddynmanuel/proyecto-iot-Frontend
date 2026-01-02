@@ -1,5 +1,5 @@
 // ... imports
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield,
@@ -176,8 +176,8 @@ function CameraStreamView({
             onClick={onRecognize}
             disabled={isRecognizing}
             className={`px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition-all duration-200 ${isRecognizing
-                ? "bg-cyan-500/50 text-cyan-100 cursor-not-allowed"
-                : "bg-cyan-500 text-white hover:bg-cyan-600 shadow-lg hover:shadow-cyan-500/50"
+              ? "bg-cyan-500/50 text-cyan-100 cursor-not-allowed"
+              : "bg-cyan-500 text-white hover:bg-cyan-600 shadow-lg hover:shadow-cyan-500/50"
               }`}
           >
             {isRecognizing ? (
@@ -212,10 +212,10 @@ function CameraStreamView({
         >
           <div
             className={`px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 ${recognitionResult.success &&
-                recognitionResult.recognized_users &&
-                recognitionResult.recognized_users.length > 0
-                ? "bg-green-500/90 text-white"
-                : "bg-red-500/90 text-white"
+              recognitionResult.recognized_users &&
+              recognitionResult.recognized_users.length > 0
+              ? "bg-green-500/90 text-white"
+              : "bg-red-500/90 text-white"
               }`}
           >
             {recognitionResult.success &&
@@ -395,8 +395,8 @@ export default function MonitoreoSeguridad() {
 
             <SimpleCard
               className={`p-4 sm:p-5 md:p-6 mb-6 md:mb-8 border transition-all ${systemOn
-                  ? `bg-gradient-to-r ${colors.cyanGradient} ${colors.humidityShadow}`
-                  : `${colors.cardBg} ${colors.border}`
+                ? `bg-gradient-to-r ${colors.cyanGradient} ${colors.humidityShadow}`
+                : `${colors.cardBg} ${colors.border}`
                 }`}
             >
               {/* ... Status Card Content ... */}
@@ -439,8 +439,8 @@ export default function MonitoreoSeguridad() {
                   <SimpleCard
                     key={camera.id}
                     className={`overflow-hidden border transition-all ${isActive
-                        ? `bg-gradient-to-br ${colors.cyanGradient} shadow-lg shadow-cyan-500/20`
-                        : `${colors.cardBg} ${colors.border}`
+                      ? `bg-gradient-to-br ${colors.cyanGradient} shadow-lg shadow-cyan-500/20`
+                      : `${colors.cardBg} ${colors.border}`
                       }`}
                   >
                     <div className="flex flex-col h-full">
@@ -484,8 +484,8 @@ export default function MonitoreoSeguridad() {
                           onClick={() => toggleCamera(camera.id)}
                           disabled={!systemOn}
                           className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 flex items-center justify-center ${isActive
-                              ? "bg-green-500/30 text-green-400 hover:bg-green-500/40"
-                              : "bg-slate-700/30 text-slate-500 hover:bg-slate-700/50"
+                            ? "bg-green-500/30 text-green-400 hover:bg-green-500/40"
+                            : "bg-slate-700/30 text-slate-500 hover:bg-slate-700/50"
                             } disabled:opacity-50 disabled:cursor-not-allowed`}
                           aria-label={`${camera.label}: ${cameraStates[camera.id] ? "desactivar" : "activar"
                             }`}
@@ -497,8 +497,8 @@ export default function MonitoreoSeguridad() {
                       <div className="relative w-full h-48 sm:h-64 md:h-[28rem] bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center overflow-hidden">
                         <div
                           className={`absolute top-3 right-3 w-3 h-3 rounded-full ${isActive
-                              ? "bg-green-500 animate-pulse"
-                              : "bg-red-500"
+                            ? "bg-green-500 animate-pulse"
+                            : "bg-red-500"
                             } shadow-lg`}
                         />
 
