@@ -1,49 +1,29 @@
-# Proyecto IoT – Frontend
+# Smart Home Dashboard – Frontend
 
-Interfaz frontend del proyecto IoT, desarrollada con un enfoque en experiencia de usuario,
-componentes reutilizables y diseño responsive.
+Dashboard frontend desarrollado para la visualización y control de una casa inteligente.
+El enfoque principal del proyecto es el diseño de interfaces, la experiencia de usuario
+y la construcción de componentes reutilizables.
 
-Este repositorio contiene únicamente la parte frontend del proyecto, funcionando de manera
-independiente con datos mock/simulados.
-
----
-
-## 🎯 Mi rol
-- Desarrollo del frontend
-- Arquitectura y organización de componentes
-- Diseño de interfaces (UI)
-- Enfoque en experiencia de usuario (UX)
+La aplicación cuenta con un diseño responsive, distintas secciones de interacción
+y una estructura clara orientada al usuario.
 
 ---
 
-## 🛠️ Tecnologías utilizadas
-- React + Vite
+## 🛠️ Tecnologías
+- React
 - TypeScript
 - Tailwind CSS
-- Git & GitHub
+- Vite
 
 ---
 
-## 🚀 Cómo ejecutar
+## 🚀 Demo
+https://proyecto-iot-frontend.vercel.app/
+
+---
+
+## ⚙️ Instalación
 
 ```bash
-# Instalar dependencias
 npm install
-
-# Ejecutar en modo desarrollo
 npm run dev
-
-# Compilar para producción
-npm run build
-```
-
----
-
-## 📌 Contexto del proyecto
-Este proyecto fue desarrollado originalmente en equipo.
-Mi participación se centró principalmente en el desarrollo del frontend y la
-implementación de la interfaz de usuario.
-
-En este repositorio se mantiene únicamente la capa frontend, de forma independiente
-y sin dependencias de backend. La aplicación funciona con datos simulados para
-demostración.
